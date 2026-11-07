@@ -149,12 +149,11 @@ document.querySelector('#app').innerHTML = `
           <p class="form-kicker">Da el primer paso</p><h2>Escríbeme y agenda tu consulta</h2>
           <div class="form-fields">
             <label>Nombre *<input name="nombre" type="text" placeholder="Tu nombre" required></label>
-            <label>WhatsApp *<input name="whatsapp" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="15" placeholder="09..." autocomplete="tel" required></label>
             <label>Servicio *<select name="servicio" required><option value="">Elige una opción</option><option>Consulta nutricional online</option><option>Seguimiento online</option><option>Consulta a domicilio</option><option>Seguimiento a domicilio</option></select></label>
             <label>Fecha preferida<input name="fecha" type="date"></label>
             <label class="full-field">Mensaje (opcional)<textarea name="mensaje" rows="3" placeholder="Cuéntame brevemente qué buscas"></textarea></label>
           </div>
-          <button class="button button-dark form-submit" type="submit">Enviar solicitud</button>
+          <button class="button button-dark form-submit" type="submit">Enviar por WhatsApp</button>
           <p class="form-note">Usaremos tus datos solo para agendar tu cita.</p>
           <p class="form-feedback" role="status" aria-live="polite"></p>
         </form>
@@ -188,14 +187,28 @@ document.querySelectorAll('.main-nav a').forEach((link) => {
   })
 })
 
-const whatsappInput = document.querySelector('input[name="whatsapp"]')
-whatsappInput.addEventListener('input', () => {
-  whatsappInput.value = whatsappInput.value.replace(/\D/g, '')
-})
-
 document.querySelector('#formulario').addEventListener('submit', (event) => {
   event.preventDefault()
+
+  const formData = new FormData(event.currentTarget)
+  const nombre = formData.get('nombre')
+  const servicio = formData.get('servicio')
+  const fecha = formData.get('fecha') || 'Por definir'
+  const mensaje = formData.get('mensaje') || 'Sin mensaje adicional'
+  const whatsappNumber = '593962598292'
+  const text = [
+    'Hola Caro, quiero agendar una consulta nutricional.',
+    '',
+    `Nombre: ${nombre}`,
+    `Servicio: ${servicio}`,
+    `Fecha preferida: ${fecha}`,
+    `Mensaje: ${mensaje}`,
+  ].join('\n')
+
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`
+  window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+
   const feedback = document.querySelector('.form-feedback')
-  feedback.textContent = '¡Gracias! Tu solicitud está lista para ser coordinada.'
+  feedback.textContent = 'Abriendo WhatsApp con tu solicitud preparada.'
   event.currentTarget.reset()
 })
